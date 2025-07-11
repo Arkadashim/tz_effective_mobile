@@ -19,11 +19,13 @@ export class AuthController {
     user.password = await bcrypt.hash(password, 10);
 
     const errors = await validate(user);
+    // Если валидация объекта провалена, возвращаем ошибку
     if (errors.length > 0) {
       throw new AppError('Validation failed', 400, errors);
     }
 
     const existingUser = await this.userRepository.findOne({ where: { email } });
+    // Если пользователь по email уже существует, то возвращаем ошибку
     if (existingUser) {
       throw new AppError('Email already exists', 400);
     }
@@ -38,10 +40,12 @@ export class AuthController {
     const { email, password } = req.body;
     const user = await this.userRepository.findOne({ where: { email } });
     
+    // Провалена идентификация / аутентификация
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new AppError('Invalid credentials', 401);
     }
 
+    // Пользователь забанен
     if (user.status === 'inactive') {
       throw new AppError('User account is inactive', 403);
     }

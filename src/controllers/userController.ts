@@ -10,6 +10,7 @@ export class UserController {
     const userId = req.params.id;
     const currentUser = (req as any).user;
 
+    // Если пользователь получает данные не о себе и не является админом, запретить доступ
     if (currentUser.id !== userId && currentUser.role !== 'admin') {
       throw new AppError('Unauthorized', 403);
     }
@@ -25,6 +26,7 @@ export class UserController {
   async getAllUsers(req: Request, res: Response) {
     const currentUser = (req as any).user;
     
+    // Доступ к списку всех пользователей доступен только администратору
     if (currentUser.role !== 'admin') {
       throw new AppError('Unauthorized', 403);
     }
@@ -37,8 +39,9 @@ export class UserController {
     const userId = req.params.id;
     const currentUser = (req as any).user;
 
+    // Если пользователь блокирует не себя и не является админом, запретить доступ
     if (currentUser.id !== userId && currentUser.role !== 'admin') {
-      throw new AppError('Unauthorized', 403);
+      throw new AppError('Forbidden', 403);
     }
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
