@@ -1,22 +1,22 @@
-import { Request, Response } from "express";
-import { getRepository } from "typeorm";
-import { User, UserStatus } from "../entities/User";
-import { AppError } from "../utils/AppError";
+import { Request, Response } from 'express';
+import { User, UserStatus } from '../entities/User';
+import { AppError } from '../utils/AppError';
+import { AppDataSource } from '../config';
 
 export class UserController {
-  private userRepository = getRepository(User);
+  private userRepository = AppDataSource.getRepository(User);
 
   async getUserById(req: Request, res: Response) {
     const userId = req.params.id;
     const currentUser = (req as any).user;
 
-    if (currentUser.id !== userId && currentUser.role !== "admin") {
-      throw new AppError("Unauthorized", 403);
+    if (currentUser.id !== userId && currentUser.role !== 'admin') {
+      throw new AppError('Unauthorized', 403);
     }
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new AppError("User not found", 404);
+      throw new AppError('User not found', 404);
     }
 
     res.json(user);
@@ -24,9 +24,9 @@ export class UserController {
 
   async getAllUsers(req: Request, res: Response) {
     const currentUser = (req as any).user;
-
-    if (currentUser.role !== "admin") {
-      throw new AppError("Unauthorized", 403);
+    
+    if (currentUser.role !== 'admin') {
+      throw new AppError('Unauthorized', 403);
     }
 
     const users = await this.userRepository.find();
@@ -37,17 +37,17 @@ export class UserController {
     const userId = req.params.id;
     const currentUser = (req as any).user;
 
-    if (currentUser.id !== userId && currentUser.role !== "admin") {
-      throw new AppError("Unauthorized", 403);
+    if (currentUser.id !== userId && currentUser.role !== 'admin') {
+      throw new AppError('Unauthorized', 403);
     }
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new AppError("User not found", 404);
+      throw new AppError('User not found', 404);
     }
 
     user.status = UserStatus.INACTIVE;
     await this.userRepository.save(user);
-    res.json({ message: "User blocked successfully" });
+    res.json({ message: 'User blocked successfully' });
   }
 }

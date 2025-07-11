@@ -1,16 +1,6 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
+import { DataSource, DataSourceOptions } from 'typeorm';
 dotenv.config();
-
-interface DatabaseConfig {
-  type: "postgres";
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-  entities: string[];
-  synchronize: boolean;
-}
 
 interface AppConfig {
   port: number;
@@ -18,21 +8,23 @@ interface AppConfig {
 }
 
 export const config: {
-  database: DatabaseConfig;
+  database: DataSourceOptions;
   app: AppConfig;
 } = {
   database: {
-    type: "postgres",
-    host: process.env.DB_HOST || "localhost",
-    port: parseInt(process.env.DB_PORT || "5432", 10),
-    username: process.env.DB_USERNAME || "postgres",
-    password: process.env.DB_PASSWORD || "postgres",
-    database: process.env.DB_NAME || "effective_mobile",
-    entities: ["src/entities/*.ts"],
-    synchronize: process.env.NODE_ENV !== "production",
+    type: 'postgres',
+    host: process.env.DATABASE_HOST || 'localhost',
+    port: parseInt(process.env.DATABASE_PORT || '5432', 10),
+    username: process.env.DATABASE_USERNAME || 'postgres',
+    password: process.env.DATABASE_PASSWORD || 'postgres',
+    database: process.env.DATABASE_NAME || 'effective_mobile',
+    entities: ['src/entities/*.ts'],
+    synchronize: process.env.NODE_ENV !== 'production',
   },
   app: {
-    port: parseInt(process.env.PORT || "3000", 10),
-    jwtSecret: process.env.JWT_SECRET || "some_key",
+    port: parseInt(process.env.PORT || '3000', 10),
+    jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
   },
 };
+
+export const AppDataSource = new DataSource(config.database);
